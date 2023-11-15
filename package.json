@@ -12,8 +12,8 @@
   "commands": [
     {
       "name": "index",
-      "title": "Submit Form",
-      "description": "Template for submitting a form",
+      "title": "Daily Log",
+      "description": "write daily log for obsidian",
       "mode": "view"
     }
   ],
