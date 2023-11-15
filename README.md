@@ -1,0 +1,3 @@
+# DailyLogsForObsidian
+
+Obsidianにログを気ままに書き込む
