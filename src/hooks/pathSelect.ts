@@ -6,7 +6,6 @@ const PATH = "PATH";
 export function useSetFile() {
   return useCallback(async (path: string) => {
     await LocalStorage.setItem(PATH, path);
-    return await LocalStorage.getItem<string>(PATH);
   }, []);
 }
 

@@ -1,8 +1,8 @@
 import { Form, ActionPanel, Action } from "@raycast/api";
 import { usePromise } from "@raycast/utils";
 import useWriteLog from "./hooks/writeLog";
-import useToday, { useNowTime } from "./hooks/today";
-import { useCallback, useMemo } from "react";
+import { useNowTime } from "./hooks/today";
+import { useCallback } from "react";
 import { useGetFile, useSetFile } from "./hooks/pathSelect";
 
 type Values = {
@@ -14,17 +14,13 @@ export default function Command() {
   const getFile = useGetFile();
   const setFile = useSetFile();
   const writeLog = useWriteLog();
-  const today = useToday();
   const now = useNowTime();
-  const { isLoading, data } = usePromise(async () => {
-    return await getFile();
-  }, []);
-  const defaultPath = useMemo(() => [data, "/", today(), ".md"].join(""), [data]);
+  const { isLoading, data } = usePromise(getFile, []);
 
   const saveFile = useCallback(
-    async (dir: string[]) => {
+    (dir: string[]) => {
       if (dir.length === 0) return;
-      await setFile(dir[0]);
+      setFile(dir[0]);
     },
     [setFile]
   );
@@ -46,7 +42,7 @@ export default function Command() {
           </ActionPanel>
         }
       >
-        {isLoading ? (
+        {isLoading && data !== undefined ? (
           <Form.Description text="Loading..." />
         ) : (
           <Form.FilePicker
@@ -54,8 +50,7 @@ export default function Command() {
             title="ファイル"
             canChooseDirectories={false}
             canChooseFiles={true}
-            storeValue={true}
-            defaultValue={data ? [data] : [defaultPath]}
+            value={data ? [data] : undefined}
             onChange={saveFile}
             allowMultipleSelection={false}
           />
@@ -63,7 +58,7 @@ export default function Command() {
 
         <Form.TextArea
           id="textarea"
-          title="📝"
+          title="ログ"
           placeholder="ログに残したいこと、気づき、思ったことなど"
           storeValue={false}
         />
