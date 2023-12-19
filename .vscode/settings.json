@@ -1,0 +1,26 @@
+{
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  "files.watcherExclude": {
+    "**/__generated__/**": true,
+    "**/build/**": true,
+    "**/coverage/**": true,
+    "**/.next/**": true,
+    "**/node_modules/**": true,
+    "**/.git/**": true,
+    "**/.yarn/**": true
+  },
+  "cSpell.customDictionaries": {
+    "project-words": {
+      "name": "project-words",
+      "path": "${workspaceRoot}/project-words.txt",
+      "description": "Words used in this project",
+      "addWords": true
+    },
+    "custom": true,
+    "internal-terms": false
+  }
+}
