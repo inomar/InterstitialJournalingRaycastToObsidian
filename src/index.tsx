@@ -1,7 +1,7 @@
-import { Form, ActionPanel, Action } from "@raycast/api";
+import { Form, ActionPanel, Action, showToast, Toast } from "@raycast/api";
 import { usePromise } from "@raycast/utils";
 import useWriteLog from "./hooks/writeLog";
-import useToday, { useNowTime } from "./hooks/today";
+import { useNowTime } from "./hooks/today";
 import { useCallback, useMemo } from "react";
 import { useGetFile, useSetFile } from "./hooks/pathSelect";
 
@@ -14,58 +14,58 @@ export default function Command() {
   const getFile = useGetFile();
   const setFile = useSetFile();
   const writeLog = useWriteLog();
-  const today = useToday();
   const now = useNowTime();
-  const { isLoading, data } = usePromise(async () => {
-    return await getFile();
-  }, []);
-  const defaultPath = useMemo(() => [data, "/", today(), ".md"].join(""), [data]);
+  const { isLoading, data, mutate } = usePromise(getFile, []);
 
   const saveFile = useCallback(
-    async (dir: string[]) => {
+    (dir: string[]) => {
       if (dir.length === 0) return;
-      await setFile(dir[0]);
+      setFile(dir[0]);
+      mutate();
     },
     [setFile]
   );
 
   const handleSubmit = useCallback(
     (values: Values) => {
-      if (!data) return;
+      if (!data) {
+        showToast({ title: "エラー", message: "ファイルが選択されていません。", style: Toast.Style.Failure });
+        return;
+      }
       writeLog(data, `${values.textarea} <span style="color: #d1d5db;">- <i>${now()}</i></span>\n`);
     },
     [writeLog, data, now]
   );
 
+  const filePath = useMemo(() => (data ? [data] : undefined), []);
+
   return (
     <>
       <Form
+        isLoading={isLoading}
         actions={
           <ActionPanel>
             <Action.SubmitForm onSubmit={handleSubmit} />
           </ActionPanel>
         }
       >
-        {isLoading ? (
-          <Form.Description text="Loading..." />
-        ) : (
-          <Form.FilePicker
-            id="picker-file"
-            title="ファイル"
-            canChooseDirectories={false}
-            canChooseFiles={true}
-            storeValue={true}
-            defaultValue={data ? [data] : [defaultPath]}
-            onChange={saveFile}
-            allowMultipleSelection={false}
-          />
-        )}
+        <Form.FilePicker
+          id="picker-file"
+          title="ファイル"
+          canChooseDirectories={false}
+          canChooseFiles={true}
+          storeValue={true}
+          value={filePath}
+          onChange={saveFile}
+          allowMultipleSelection={false}
+        />
 
         <Form.TextArea
           id="textarea"
-          title="📝"
+          title="ログ"
           placeholder="ログに残したいこと、気づき、思ったことなど"
           storeValue={false}
+          autoFocus
         />
       </Form>
     </>

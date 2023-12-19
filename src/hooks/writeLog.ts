@@ -3,7 +3,7 @@ import { Toast, showToast } from "@raycast/api";
 import fs from "fs";
 
 export default function useWriteLog() {
-  const options = { flag: "a" };
+  const options = { flag: "a" }; // 追加書き込みモード
   return useCallback((filePath: string, text: string) => {
     fs.writeFile(filePath, text, options, (err) => {
       if (err) {
